@@ -12,7 +12,7 @@
 ##### *Doosan Robot ROS Package is implemented at ROS-melodic.*
     ### We recoomand the /home/<user_home>/catkin_ws/src
     cd ~/catkin_ws/src
-    git clone -b melodic-devel --single-branch https://github.com/doosan-robotics/doosan-robot
+    git clone -b melodic-devel --single-branch https://github.com/juju0111/doosan-robot
     rosdep install --from-paths doosan-robot --ignore-src --rosdistro melodic -r -y
     cd ~/catkin_ws
     catkin_make
