@@ -13,10 +13,14 @@
   <arg name="mode" default="real"/>
   <arg name="model" default="a0912"/>
   <arg name="color" default="white"/>
-  <arg name="gripper" default="none"/>
+  <arg name="gripper" default="robotiq_2f"/>
   <arg name="mobile" default="none"/>
   <!--use moveit : controller=:trajectory / else: controller:=position-->
   <arg name="controller" default="trajectory"/>
+  
+  <arg name="sim" default="false"/>
+  <arg name="comport" default="/dev/ttyUSB0" unless="$(arg sim)"/> 
+  <arg name="baud" default="115200" unless="$(arg sim)"/> 
 
   <!-- Spawn the arms. -->
   <!-- include file="$(find dsr_bringup)/launch/dsr_base.launch"-->
@@ -35,9 +39,11 @@
     <arg name="y"             value="0"/>
     <arg name="yaw"           value="0"/>
   </include>
+
+    
   <!-- model에 따른 moveit 실행 -->
   <group if="$(eval arg('model') == 'm0609')">
-      <include file="$(find moveit_config_m0609)/launch/m0609.launch" ns="dsr01$(arg model)">
+      <include file="$(find moveit_config_m0609)/launch/m0609.launch" ns="dsr01$(arg model)" >
           <arg name="fake_execution" value="false"/>
           <arg name="color" value="$(arg color)"/>
       </include>
@@ -124,6 +130,26 @@
   </group>
   
 
+  <!-- gripper Control -->
+  <!-- Launch action server for gripper -->
+  <include file="$(find robotiq_2f_gripper_control)/launch/robotiq_action_server.launch">
+      <arg name="comport" value="$(arg comport)" unless="$(arg sim)"/>
+      <arg name="baud" value="$(arg baud)" unless="$(arg sim)"/>
+      <arg name="stroke" value="0.140"/>
+      <arg name="joint_name" value="robotiq_85_left_knuckle_joint"/>
+      <arg name="verbose" value="true"/>
+      <arg name="sim" value="$(arg sim)"/>
+  </include>
+
+  <!-- Launch action client example  -->
+  <node pkg="robotiq_2f_gripper_control" type="robotiq_2f_action_client_example_class.py" 
+      name="robotiq_140_client" output="screen">
+      <param name="action_name" value="command_robotiq_action" />
+  </node>
+
+  
+  
+  
   
   <!-- View in RVIZ. -->
   <!--group if="$(arg rviz)"-->
