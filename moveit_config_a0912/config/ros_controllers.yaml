@@ -16,6 +16,7 @@ m1013:
       - joint4
       - joint5
       - joint6
+      - robotiq_85_left_knuckle_joint
     sim_control_mode: 1  # 0: position, 1: velocity
 # Publish all joint states
 # Creates the /joint_states topic necessary in ROS
@@ -33,6 +34,7 @@ m1013:
       - joint4
       - joint5
       - joint6
+      - robotiq_85_left_knuckle_joint
     gains:
       joint1:
         p: 100
@@ -64,3 +66,8 @@ m1013:
         d: 1
         i: 1
         i_clamp: 1
+      robotiq_85_left_knuckle_joint:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1  
