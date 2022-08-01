@@ -197,9 +197,9 @@ class MoveGroupPythonIntefaceTutorial(object):
         pose_goal.orientation.y = np.sqrt(2)/2
         pose_goal.orientation.z = 0
 
-        pose_goal.position.x = 0.2
-        pose_goal.position.y = 0.4
-        pose_goal.position.z = 0.4
+        pose_goal.position.x = 0.5
+        pose_goal.position.y = 0.6
+        pose_goal.position.z = 0.2
 
         move_group.set_pose_target(pose_goal)
 
@@ -457,6 +457,7 @@ def main():
         #print ("============ Press `Enter` to execute a movement using a joint state goal ...")
         #raw_input()
         #tutorial.go_to_joint_state()
+        
         print ("============ Press `Enter` to execute a movement using a pose goal ...")
         raw_input()
         tutorial.go_to_pose_goal()
@@ -473,7 +474,7 @@ def main():
                 if i==0:
                     cartesian_plan, fraction = tutorial.plan_cartesian_path(scale_x=0, scale_y=-1)
                 elif i==1 and j==0:
-                    cartesian_plan, fraction = tutorial.plan_cartesian_path(scale_x=1, scale_y=0)
+                    cartesian_plan, fraction = tutorial.plan_cartesian_path(scale_x=2, scale_y=0)
                 elif i==1:
                     cartesian_plan, fraction = tutorial.plan_cartesian_path(scale_x=0, scale_y=1)
                 tutorial.display_trajectory(cartesian_plan)

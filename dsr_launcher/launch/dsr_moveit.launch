@@ -8,9 +8,13 @@
   
   <arg name="host" default="127.0.0.1"/>
   <!--arg name="host" default="192.168.127.100"/-->
+
+  <arg name="mode" default="virtual"/>
+  <arg name="sim" default="true"/>
+  <!--arg name="mode" default="real"/-->
+  <!--arg name="sim" default="false"/-->
   
   <arg name="port" default="12345"/>
-  <arg name="mode" default="real"/>
   <arg name="model" default="a0912"/>
   <arg name="color" default="white"/>
   <arg name="gripper" default="robotiq_2f"/>
@@ -18,7 +22,6 @@
   <!--use moveit : controller=:trajectory / else: controller:=position-->
   <arg name="controller" default="trajectory"/>
   
-  <arg name="sim" default="false"/>
   <arg name="comport" default="/dev/ttyUSB0" unless="$(arg sim)"/> 
   <arg name="baud" default="115200" unless="$(arg sim)"/> 
 
