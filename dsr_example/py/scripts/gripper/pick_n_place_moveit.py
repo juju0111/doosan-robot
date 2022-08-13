@@ -132,6 +132,8 @@ class PickNPlaceTutorial():
     def jmove_to_pose_goal(self, pose_goal):
         # self.robot_group.set_pose_target(pose_goal)
         plan = self.robot_group.plan(pose_goal)
+        
+        print('plan : ', plan)
         self.robot_group.execute(plan, wait=True)
         # self.robot_group.go(wait=True)
 
@@ -139,6 +141,7 @@ class PickNPlaceTutorial():
     def jmove_to_joint_goal(self, joint_goal):
         # self.robot_group.go(joint_goal, wait=True)
         plan = self.robot_group.plan(joint_goal)
+        print('plan : ', plan)
         self.robot_group.execute(plan, wait=True)
 
     def tmove_to_pose_goal(self, pose_goal):
@@ -150,7 +153,7 @@ class PickNPlaceTutorial():
                                    waypoints,   # waypoints to follow
                                    0.01,        # eef_step
                                    0.0)         # jump_threshold
-
+        print('plan : ', plan)
         msg = MoveGroupActionResult()
         msg.result.planned_trajectory = plan
         self.plan_result_pub.publish(msg)

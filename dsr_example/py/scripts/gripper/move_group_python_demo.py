@@ -294,6 +294,11 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## ^^^^^^^^^^^^^^^^
         ## Use execute if you would like the robot to follow
         ## the plan that has already been computed:
+        
+        print("plan : ",plan)
+        
+        print("plan goal"
+        
         move_group.execute(plan, wait=True)
 
         ## **Note:** The robot's current joint state must be within some tolerance of the
@@ -458,15 +463,15 @@ def main():
         #raw_input()
         #tutorial.go_to_joint_state()
         
-        print ("============ Press `Enter` to execute a movement using a pose goal ...")
-        raw_input()
-        tutorial.go_to_pose_goal()
+        #print ("============ Press `Enter` to execute a movement using a pose goal ...")
+        #raw_input()
+        #tutorial.go_to_pose_goal()
 
         
         print ("============ Press `Enter` to plan and display a Cartesian path ...")
         print ("============ Press `Enter` to execute a saved path ...")
 
-        gripper_control(0.7)
+        #gripper_control(0.7)
         raw_input()
         for i in range(2):
             for j in range(4):

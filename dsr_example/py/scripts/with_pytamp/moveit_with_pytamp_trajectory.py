@@ -4,7 +4,7 @@
 import rospy
 import os,threading, time, sys
 import numpy as np
-from dsr_msgs.srv import PickPytamp,PlacePytamp
+from dsr_msgs.srv import PickPytamp,PlacePytamp,PickPytamp_demo,OperatePytamp
 
 sys.dont_write_bytecode = True
 sys.path.append( os.path.abspath(os.path.join(os.path.dirname(__file__),"../../../../common/imp")) ) # get import path : DSR_ROBOT.py 
@@ -97,6 +97,9 @@ class moveit_pytamp():
         
         self.plan_result_pub = rospy.Publisher("/move_group/result", MoveGroupActionResult, queue_size=1)
 
+        ## drive robot on the given path!!
+        self.srv_operate_robot = rospy.Service("/operate_robot", OperatePytamp, self.operate_robot_cb)
+
         # Misc variables
         self.box_name = ''
 
@@ -111,6 +114,24 @@ class moveit_pytamp():
 
         self.srv_robotiq_2f_move = rospy.ServiceProxy('/' + ROBOT_ID + ROBOT_MODEL + '/gripper/robotiq_2f_move', Robotiq2FMove)
         self.srv_robotiq_gripper_move = rospy.ServiceProxy('/robotiq_control_move', Robotiq2FMove)
+
+        self.srv_get_path_demo = rospy.ServiceProxy('/get_path_demos',PickPytamp_demo)
+
+    
+    def change_path_to_degree(self,path):
+        return np.rad2deg(np.array(path).reshape(-1,6)).tolist()
+    
+    def operate_robot_cb(self,req):
+        # req.path : 1-D list ( joint value is radian-type)
+        path = self.change_path_to_degree(req.path)
+        # path is 2-D list degree type
+        self.operate_path(path,req.time)
+        return True
+    
+    def operate_path(self,path,time):
+        # path is degree type, and list type is (N x 6)
+        # self.movej_dsr(path)
+        self.movesj_dsr(path,time)
 
     def hold_hand(self, target_name):
         touch_links = ['left_inner_finger_pad', 'right_inner_finger_pad']
@@ -131,6 +152,17 @@ class moveit_pytamp():
         current_joint = self.robot_group.get_current_joint_values()
         return current_joint
 
+    def get_demo_path(self):
+        self.demo_path = self.srv_get_path_demo("A_box")
+
+        print(self.demo_path)
+        self._demo_path = self.change_path_to_degree(self.demo_path.demo_grasp)
+        print(self._demo_path)
+
+    def demo_execution(self):
+        demo_path = np.rad2deg(self._demo_path).tolist()
+        self.move_dsr(demo_path)
+
     def get_pick_path(self,object_name):
         # object_name : str
         current_joint = self.get_current_joint_values()
@@ -150,10 +182,18 @@ class moveit_pytamp():
         self.release = np.array(planned_path.release).reshape(-1,6)
         self.post_release = np.array(planned_path.post_release).reshape(-1,6)
     
-    def move_dsr(self,path):
+    def movej_dsr(self,path):
         for joint_val in path:
             # operate slowly
             movej(joint_val, vel = 100, acc = 100)
+
+    def movesj_dsr(self,path,time):
+        path_ = copy.deepcopy(path)
+        # print(path)
+        for i,joint_val in enumerate(path):
+            path_[i] = posj(joint_val[0],joint_val[1],joint_val[2],joint_val[3],joint_val[4],joint_val[5])
+
+        movesj(path_,t = time)
 
     def pick_execution(self):
         pre_grasp = np.rad2deg(self.pre_grasp).tolist()
@@ -187,14 +227,18 @@ class moveit_pytamp():
 def main():
     try:
         MP = moveit_pytamp()
+        rate = rospy.Rate(10)
 
-        MP.get_pick_path("F_box")
-        MP.pick_execution()
-        MP.get_place_path('table')
-        MP.place_execution()
+        #MP.get_pick_path("F_box")
+        #MP.pick_execution()
+        #MP.get_place_path('table')
+        #MP.place_execution()
+        #MP.get_demo_path()
+        #MP.demo_execution()
         
         #MP.get_current_joint_values()
-
+        rospy.spin()
+        
     except rospy.ROSInterruptException:
         return
     except KeyboardInterrupt:
@@ -208,7 +252,6 @@ def main():
 #     rospy.Subscriber('/'+ROBOT_ID +ROBOT_MODEL+'/state', RobotState, msgRobotState_cb)
 #     rospy.spin()
 #     # rospy.spinner(2)  
-
 if __name__ == "__main__":
     #----- set target robot --------------- 
     my_robot_id    = "dsr01"

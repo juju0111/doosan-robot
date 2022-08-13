@@ -17,7 +17,7 @@ class pnp_pytamp():
 
         self.srv_pick = rospy.Service("/get_pick_path", PickPytamp, self.get_pick_object_cb)
         self.srv_place = rospy.Service("/get_place_path", PlacePytamp, self.get_place_object_cb)
-    
+
     def get_pick_object_cb(self, req):
         self.actions = list(self.pick.get_possible_actions_level_1())
 
@@ -43,6 +43,7 @@ class pnp_pytamp():
                         self.success_joint_path = True
                         
                         self.pick_pre_grasp = np.array(pick_joint_path[0]['pre_grasp'],dtype="float32").reshape(-1).tolist()
+                        print(pick_joint_path[0]['pre_grasp'])
                         self.pick_grasp = np.array(pick_joint_path[0]['grasp'],dtype="float32").reshape(-1).tolist()
                         self.pick_post_grasp = np.array(pick_joint_path[0]['post_grasp'],dtype="float32").reshape(-1).tolist()
                         self.pick_objects.append(self.pick.scene_mngr.attached_obj_name)
@@ -56,7 +57,6 @@ class pnp_pytamp():
         if not self.pick_pre_grasp:
             self.pick_pre_grasp = [0,0,0,0,0,0]
         return self.pick_pre_grasp ,self.pick_grasp, self.pick_post_grasp
-
 
     def get_place_object_cb(self, req):
 

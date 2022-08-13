@@ -130,6 +130,8 @@ class PickNPlaceTutorial():
     def jmove_to_pose_goal(self, pose_goal):
         # self.robot_group.set_pose_target(pose_goal)
         plan = self.robot_group.plan(pose_goal)
+        # print("wait for raw_input")
+        # raw_input()
         self.robot_group.execute(plan, wait=True)
         # self.robot_group.go(wait=True)
 
@@ -137,14 +139,23 @@ class PickNPlaceTutorial():
     def jmove_to_joint_goal(self, joint_goal):
         # self.robot_group.go(joint_goal, wait=True)
         plan = self.robot_group.plan(joint_goal)
-        print(plan)
+        # print("wait for raw_input")
+        # raw_input()
         self.robot_group.execute(plan, wait=True)
 
 
-    def tmove_to_pose_goal(self, pose_goal):
+    def tmove_to_pose_goal(self ,pose_goal):
         waypoints = []
-        waypoints.append(self.robot_group.get_current_pose().pose)
-        waypoints.append(pose_goal)
+
+        #waypoints.append(current_pose)
+        #waypoints.append(pose_goal)
+        wpose = self.robot_group.get_current_pose().pose
+        print("current pose : ",wpose)
+        print("pose_goal : ",pose_goal)
+        wpose.position.z += 0.15
+        wpose.orientation = pose_goal.orientation
+        print("goal_pose")
+        waypoints.append(copy.deepcopy(wpose))
 
         plan, _ = self.robot_group.compute_cartesian_path(
                                    waypoints,   # waypoints to follow
@@ -154,6 +165,9 @@ class PickNPlaceTutorial():
         msg = MoveGroupActionResult()
         msg.result.planned_trajectory = plan
         self.plan_result_pub.publish(msg)
+
+        # print("wait for raw_input")
+        # raw_input()
         self.robot_group.execute(plan, wait=True)
 
 
@@ -234,7 +248,7 @@ class PickNPlaceTutorial():
         table0.header.frame_id = self.robot_group.get_planning_frame()
         table0.pose.position.x =0.0
         table0.pose.position.y =0.0
-        table0.pose.position.z =-0.3
+        table0.pose.position.z =-0.25
         table0.pose.orientation.w = 1.0      
         self.add_box(name='table0', pose_stamp=table0, size=(0.4, 0.8, 0.4))
         self.object_info['table0'] = table0
@@ -245,7 +259,7 @@ class PickNPlaceTutorial():
         table.header.frame_id = self.robot_group.get_planning_frame()
         table.pose.position.x =0.7
         table.pose.position.y =0
-        table.pose.position.z =-0.15
+        table.pose.position.z =-0.10
         table.pose.orientation.w = 1.0      
         self.add_box(name='table', pose_stamp=table, size=(0.7, 1.5, 0.1))
         self.object_info['table'] = table
@@ -254,17 +268,19 @@ class PickNPlaceTutorial():
         wall2.header.frame_id = self.robot_group.get_planning_frame()
         wall2.pose.position.x =0.0
         wall2.pose.position.y =1.0
-        wall2.pose.position.z =-0.2
+        wall2.pose.position.z =-0.15
         wall2.pose.orientation.w = 1.0                            
 
         self.add_box(name='wall2', pose_stamp=wall2, size=(2, 0.1, 2))
         self.object_info['wall2'] = wall2
 
+        cube_x = 0.05
+        cube_y = 0.1
         cube_0 = geometry_msgs.msg.PoseStamped()
         cube_0.header.frame_id = self.robot_group.get_planning_frame()
-        cube_0.pose.position.x =0.55
-        cube_0.pose.position.y =-0.10
-        cube_0.pose.position.z =-0.05
+        cube_0.pose.position.x =0.55 + cube_x
+        cube_0.pose.position.y =0.1 + cube_y
+        cube_0.pose.position.z =-0.01
         cube_0.pose.orientation.w = 1.0                            
 
         self.add_box(name='cube_0', pose_stamp=cube_0, size=(0.1, 0.1, 0.1))
@@ -272,9 +288,9 @@ class PickNPlaceTutorial():
 
         cube_1 = geometry_msgs.msg.PoseStamped()
         cube_1.header.frame_id = self.robot_group.get_planning_frame()
-        cube_1.pose.position.x =0.55
-        cube_1.pose.position.y =0.10
-        cube_1.pose.position.z =-0.05
+        cube_1.pose.position.x =0.55+ cube_x
+        cube_1.pose.position.y =0.30+ cube_y
+        cube_1.pose.position.z =-0.01
         cube_1.pose.orientation.w = 1.0     
 
         self.add_box(name='cube_1', pose_stamp=cube_1, size=(0.1, 0.1, 0.1))
@@ -282,9 +298,9 @@ class PickNPlaceTutorial():
 
         cube_2 = geometry_msgs.msg.PoseStamped()
         cube_2.header.frame_id = self.robot_group.get_planning_frame()
-        cube_2.pose.position.x =0.75
-        cube_2.pose.position.y =-0.10
-        cube_2.pose.position.z =-0.05
+        cube_2.pose.position.x =0.75+ cube_x
+        cube_2.pose.position.y =0.10+ cube_y
+        cube_2.pose.position.z =-0.01
         cube_2.pose.orientation.w = 1.0     
 
         self.add_box(name='cube_2', pose_stamp=cube_2, size=(0.1, 0.1, 0.1))
@@ -292,16 +308,16 @@ class PickNPlaceTutorial():
 
         cube_3 = geometry_msgs.msg.PoseStamped()
         cube_3.header.frame_id = self.robot_group.get_planning_frame()
-        cube_3.pose.position.x =0.75
-        cube_3.pose.position.y =0.10
-        cube_3.pose.position.z =-0.05
+        cube_3.pose.position.x =0.75+ cube_x
+        cube_3.pose.position.y =0.30+ cube_y
+        cube_3.pose.position.z =-0.01
         cube_3.pose.orientation.w = 1.0     
 
         self.add_box(name='cube_3', pose_stamp=cube_3, size=(0.1, 0.1, 0.1))
         self.object_info['cube_3'] = cube_3
 
 
-        tray_center = [0.55, -0.5, -0.1]
+        tray_center = [0.55, -0.2, -0.05]
         tray_size = [0.3, 0.3, 0.05]
         self.make_tray(tray_center,tray_size)
 
@@ -318,13 +334,13 @@ class PickNPlaceTutorial():
         pre_pose = copy.deepcopy(pose)
         pre_pose.position.x = object_pose.pose.position.x
         pre_pose.position.y = object_pose.pose.position.y
-        pre_pose.position.z = object_pose.pose.position.z + 0.35
+        pre_pose.position.z = object_pose.pose.position.z + 0.30
         self.jmove_to_pose_goal(pre_pose)
         print("wait for move to pre_position")
         raw_input()
 
         pick_pose = copy.deepcopy(pre_pose)
-        pick_pose.position.z -= 0.15
+        pick_pose.position.z -= 0.1
         self.jmove_to_pose_goal(pick_pose)
         print("wait for move to pick_position")
         raw_input()
@@ -337,8 +353,8 @@ class PickNPlaceTutorial():
         raw_input()
 
         post_pose = copy.deepcopy(pick_pose)
-        post_pose.position.z += 0.1
-        self.jmove_to_pose_goal(post_pose)
+        post_pose.position.z += 0.15
+        self.tmove_to_pose_goal(post_pose)
 
         print("wait for move to post_position")
         raw_input()
@@ -350,7 +366,7 @@ class PickNPlaceTutorial():
         raw_input()
 
         place_pose = copy.deepcopy(pose)
-        place_pose.position.z -= 0.10
+        place_pose.position.z -= 0.1
         self.jmove_to_pose_goal(place_pose)
         print("wait for move to place_position")
         raw_input()
@@ -361,8 +377,8 @@ class PickNPlaceTutorial():
         raw_input() 
 
         post_pose = copy.deepcopy(place_pose)
-        post_pose.position.z += 0.1
-        self.jmove_to_pose_goal(post_pose)
+        post_pose.position.z += 0.15
+        self.tmove_to_pose_goal(post_pose)
         print("wait for move to post_position")
         raw_input()
         if (self.object_info['tray_wall_upper'].pose.position.x > pose.position.x) and (self.object_info['tray_wall_lower'].pose.position.x < pose.position.x) and (self.object_info['tray_wall_left'].pose.position.y > pose.position.y) and (self.object_info['tray_wall_right'].pose.position.y < pose.position.y):
@@ -416,10 +432,10 @@ def main():
         raw_input()
 
 
-        #pnp.pnp('cube_0')
-        #pnp.pnp('cube_1')
-        #pnp.pnp('cube_2')
-        #pnp.pnp('cube_3')
+        pnp.pnp('cube_0')
+        pnp.pnp('cube_1')
+        pnp.pnp('cube_2')
+        pnp.pnp('cube_3')
 
         """
         ## pick object function test        

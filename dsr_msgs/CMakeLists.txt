@@ -172,7 +172,9 @@ add_service_files(
     ./realtime/WriteDataRT.srv
 	
 	./pytamp/PickPytamp.srv
+	./pytamp/PickPytamp_demo.srv
 	./pytamp/PlacePytamp.srv
+	./pytamp/OperatePytamp.srv
 )
 
 generate_messages(
