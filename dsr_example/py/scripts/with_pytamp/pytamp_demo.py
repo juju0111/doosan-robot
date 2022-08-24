@@ -6,6 +6,7 @@ import rospy
 import numpy as np
 from pytamp.benchmark import Benchmark
 from pytamp.action.pick import PickAction
+from pytamp.action.place import PlaceAction
 from pytamp.utils.heuristic_utils import get_custom_tcp_pose
 from dsr_msgs.srv import OperatePytamp,Robotiq2FMove
 from pykin.utils import plot_utils as p_utils
@@ -18,10 +19,11 @@ rospy.init_node('pytamp_demo_py', anonymous=True)
 operate_robot = rospy.ServiceProxy('/operate_robot',OperatePytamp)
 operate_gripper = rospy.ServiceProxy('/robotiq_control_move', Robotiq2FMove)
 
-z_dis_param = 0.1
+z_dis_param = 0.15
 x_dis_param = 0.2
 # Custom Benchmark Setting
-custom_benchmark = Benchmark(robot_name="doosan", geom="visual", is_pyplot=True)
+custom_benchmark = Benchmark(robot_name="doosan", geom="collision", is_pyplot=True)
+custom_benchmark.scene_mngr.scene.bench_num = 1
 custom_benchmark.robot = SingleArm(f_name=custom_benchmark.urdf_file,
                                offset=Transform(rot=[0.0, 0.0, 0.0], pos=[0, 0, 0.913]),
                                has_gripper=True,
@@ -37,7 +39,7 @@ box_mesh = get_object_mesh('ben_cube.stl', 0.06)
 
 print(box_mesh.bounds)
 print(-table_mesh.bounds[0][2])
-table_pose = Transform(pos=np.array([1.1, -0.4, -table_mesh.bounds[0][2]]))
+table_pose = Transform(pos=np.array([1.1, -0.4, -table_mesh.bounds[0][2] + z_dis_param]))
 tray_red_pose = Transform(pos=np.array([0.6, -0.5-0.3, 1.0]))
 
 table_heigt = table_mesh.bounds[1][2] - table_mesh.bounds[0][2]
@@ -49,8 +51,13 @@ custom_benchmark.scene_mngr.add_object(name="A_box", gtype="mesh", gparam=box_me
 
 pick_obj = "A_box"
 
+# fig, ax = p_utils.init_3d_figure()
+# custom_benchmark.scene_mngr.render_scene(ax)
+# custom_benchmark.scene_mngr.show()
+
 # Pick Action
 pick = PickAction(custom_benchmark.scene_mngr, n_contacts=0, n_directions=10, retreat_distance=0.1)
+place = PlaceAction(custom_benchmark.scene_mngr, release_distance=0.03)
 tcp_pose = get_custom_tcp_pose(pick.scene_mngr, pick_obj)
 
 grasp_poses = {}
@@ -84,16 +91,50 @@ if pre_grasp_joint_path:
 else:
     success_joint_path = False
 
-result = []
-if default_joint_path:
-    result = pre_grasp_joint_path + grasp_joint_path + post_grasp_joint_path + default_joint_path
+release_pose = tcp_pose
+release_pose[1, 3] = tcp_pose[1, 3] + 0.2
+release_pose[2, 3] = tcp_pose[2, 3] + 0.1
 
 
+release_poses = {}
+release_poses[pick.move_data.MOVE_release] = pick.scene_mngr.scene.robot.gripper.compute_eef_pose_from_tcp_pose(release_pose)
+release_poses[pick.move_data.MOVE_pre_release] = place.get_pre_release_pose(release_poses[pick.move_data.MOVE_release])
+release_poses[pick.move_data.MOVE_post_release] = place.get_post_release_pose(release_poses[pick.move_data.MOVE_release])
+
+pre_release_pose = release_poses[pick.move_data.MOVE_pre_release]
+release_pose = release_poses[pick.move_data.MOVE_release]
+post_release_pose = release_poses[pick.move_data.MOVE_post_release]
+
+# pre_grasp_joint_path = pick.get_rrt_star_path(pick.scene_mngr.scene.robot.init_qpos, pre_grasp_pose)
+success_joint_path = False
+pre_release_thetas = pick.scene_mngr.scene.robot.inverse_kin(pick.scene_mngr.scene.robot.init_qpos, pre_release_pose)
+
+# default pose -> pre release pose(rrt)
+pre_release_joint_path = pick.get_rrt_star_path(default_thetas, pre_release_pose)
+
+if pre_release_joint_path:
+    release_joint_path = pick.get_cartesian_path(pre_release_joint_path[-1], release_pose)
+    if release_joint_path:
+        post_release_joint_path = pick.get_cartesian_path(release_joint_path[-1], post_release_pose)
+        if post_release_joint_path:
+            default_joint_path = pick.get_rrt_star_path(post_release_joint_path[-1], goal_q=default_thetas)
+        else:
+            success_joint_path = False
+    else:
+        success_joint_path = False
+else:
+    success_joint_path = False
 
 pre_grasp_joint_path = np.array(pre_grasp_joint_path).reshape(-1).tolist()
 grasp_joint_path = np.array(grasp_joint_path).reshape(-1).tolist()
 post_grasp_joint_path = np.array(post_grasp_joint_path).reshape(-1).tolist()
 default_joint_path = np.array(default_joint_path).reshape(-1).tolist()
+
+pre_release_joint_path = np.array(pre_release_joint_path).reshape(-1).tolist()
+release_joint_path = np.array(release_joint_path).reshape(-1).tolist()
+post_release_joint_path = np.array(post_release_joint_path).reshape(-1).tolist()
+
+operate_robot(default_joint_path, 6)
 
 print("Let's move pre_grasp")
 operate_robot(pre_grasp_joint_path,3)
@@ -108,6 +149,21 @@ operate_robot(post_grasp_joint_path, 3)
 
 print("go to default pose")
 operate_robot(default_joint_path, 3)
+
+print("Let's move pre_release")
+operate_robot(pre_release_joint_path,3)
+
+print("go to release")
+operate_robot(release_joint_path, 2)
+
+# 0 : close 0.7 : open 
+operate_gripper(0.7)
+print("go to post_release")
+operate_robot(post_release_joint_path, 3)
+
+print("go to default pose")
+operate_robot(default_joint_path, 3)
+
 #print(result)
 
 # pick.scene_mngr.animation(
