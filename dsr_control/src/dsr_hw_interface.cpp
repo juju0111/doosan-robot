@@ -1234,9 +1234,12 @@ namespace dsr_control{
         float targetTime = 0.0;
 
         float fTargetPos[MAX_SPLINE_POINT][NUM_JOINT] = {0.0, };
+        float fTargetVel[MAX_SPLINE_POINT][NUM_JOINT] = {0.0, };
+        float fTargetAcc[MAX_SPLINE_POINT][NUM_JOINT] = {0.0, };
         int nCntTargetPos =0; 
 
         nCntTargetPos = msg->goal.trajectory.points.size();
+        ROS_INFO("nCntTargetPos : %d ",nCntTargetPos);
         if(nCntTargetPos > MAX_SPLINE_POINT)
         {
             ROS_INFO("DRHWInterface::trajectoryCallback over max Trajectory (%d > %d)",nCntTargetPos ,MAX_SPLINE_POINT);
@@ -1251,6 +1254,7 @@ namespace dsr_control{
             //ROS_INFO("  msg->goal.trajectory.points[%d].time_from_start = %7.3%f",i,(float)msg->goal.trajectory.points[i].time_from_start );  
 
             targetTime = d.toSec();
+            
             ///ROS_INFO("[trajectory] preTargetTime: %7.3f", preTargetTime);
             ///targetTime = targetTime - preTargetTime;
             ///preTargetTime = targetTime;
@@ -1272,8 +1276,14 @@ namespace dsr_control{
 
                 fTargetPos[i][j] = degrees[j];
 
+                // Juhan reivsed here!!
+				//fTargetVel[i][j] = msg->goal.trajectory.points[i].velocities[j];
+				//fTargetAcc[i][j] = msg->goal.trajectory.points[i].accelerations[j];
+				
             }
         }
+        // Juhan revised here!
+        //Drfl.movesj(fTargetPos, nCntTargetPos, fTargetVel, fTargetAcc);
         Drfl.movesj(fTargetPos, nCntTargetPos, 0.0, 0.0, targetTime, (MOVE_MODE)MOVE_MODE_ABSOLUTE);
 
         //Drfl.MoveJAsync(degrees.data(), 30, 30, 0, MOVE_MODE_ABSOLUTE, BLENDING_SPEED_TYPE_OVERRIDE);

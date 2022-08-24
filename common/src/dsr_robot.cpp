@@ -431,10 +431,20 @@ int CDsrRobot::_movec(float fTargetPos[2][NUM_TASK], float fTargetVel[2], float 
 int CDsrRobot::movesj(float fTargetPos[MAX_SPLINE_POINT][NUM_JOINT], int nPosCount, float fTargetVel, float fTargetAcc, float fTargetTime/*=0.f*/, int nMoveMode/*=MOVE_MODE_ABSOLUTE*/)
 {
     return _movesj(fTargetPos, nPosCount, fTargetVel, fTargetAcc, fTargetTime, nMoveMode, 0);
+
+/*
+//jh revised here -----------------------
+int CDsrRobot::movesj(float fTargetPos[MAX_SPLINE_POINT][NUM_JOINT], int nPosCount, float fTargetVel[MAX_SPLINE_POINT][NUM_JOINT], float fTargetAcc[MAX_SPLINE_POINT][NUM_JOINT], float fTargetTime, int nMoveMode)
+{
+    return _movesj(fTargetPos, nPosCount, fTargetVel, fTargetAcc, fTargetTime, nMoveMode, 0);    
 }
+//--------------------------------
+*/
+
 int CDsrRobot::amovesj(float fTargetPos[MAX_SPLINE_POINT][NUM_JOINT], int nPosCount, float fTargetVel, float fTargetAcc, float fTargetTime/*=0.f*/, int nMoveMode/*=MOVE_MODE_ABSOLUTE*/)
 {
     return _movesj(fTargetPos, nPosCount, fTargetVel, fTargetAcc, fTargetTime, nMoveMode, 1);
+    
 }
 int CDsrRobot::_movesj(float fTargetPos[MAX_SPLINE_POINT][NUM_JOINT], int nPosCount, float fTargetVel, float fTargetAcc, float fTargetTime, int nMoveMode, int nSyncType)
 {
@@ -474,6 +484,49 @@ int CDsrRobot::_movesj(float fTargetPos[MAX_SPLINE_POINT][NUM_JOINT], int nPosCo
 
     return 0; 
 }
+
+/*
+//Jh revised here
+int CDsrRobot::_movesj(float fTargetPos[MAX_SPLINE_POINT][NUM_JOINT], int nPosCount, float fTargetVel[MAX_SPLINE_POINT][NUM_JOINT], float fTargetAcc[MAX_SPLINE_POINT][NUM_JOINT], float fTargetTime=0, int nMoveMode, int nSyncType=0)
+{
+    ros::NodeHandlePtr node = boost::make_shared<ros::NodeHandle>();  
+    ros::ServiceClient srvMoveSplineJoint = node->serviceClient<dsr_msgs::MoveSplineJoint>(m_strSrvNamePrefix + "/motion/move_spline_joint");
+    dsr_msgs::MoveSplineJoint srv;
+    std::vector<std_msgs::Float64MultiArray> poses;
+    std_msgs::Float64MultiArray pos;
+
+    for(int i = 0; i < MAX_SPLINE_POINT; i++){
+        pos.data.clear();
+        for(int j = 0; j < NUM_JOINT; j++){
+            pos.data.push_back(fTargetPos[i][j]);
+        }
+        poses.push_back(pos);
+    }
+    srv.request.pos = poses;
+    srv.request.posCnt = nPosCount;
+
+    srv.request.vel = fTargetVel;
+    srv.request.acc = fTargetAcc;
+    //srv.request.time = fTargetTime;
+    srv.request.mode = nMoveMode;
+    srv.request.syncType = nSyncType;
+
+    if(srvMoveSplineJoint.call(srv))
+    {
+        //ROS_INFO("receive srv, srv.response.success: %ld\n", (long int)srv.response.success);
+        return (srv.response.success);
+    }
+    else
+    {
+        ROS_ERROR("Failed to call service dr_control_service : move_spline_joint\n");
+        ros::shutdown();
+        return -1;
+    }
+
+    return 0; 
+}
+// -----------------
+*/
 
 
 int CDsrRobot::movesx(float fTargetPos[MAX_SPLINE_POINT][NUM_TASK], int nPosCount, float fTargetVel[2], float fTargetAcc[2], float fTargetTime/*=0.f*/, int nMoveReference/*=MOVE_REFERENCE_BASE*/, int nMoveMode/*=MOVE_MODE_ABSOLUTE*/, int nVelOpt/*=SPLINE_VELOCITY_OPTION_DEFAULT*/)

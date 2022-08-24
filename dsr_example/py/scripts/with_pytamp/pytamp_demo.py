@@ -18,6 +18,8 @@ rospy.init_node('pytamp_demo_py', anonymous=True)
 operate_robot = rospy.ServiceProxy('/operate_robot',OperatePytamp)
 operate_gripper = rospy.ServiceProxy('/robotiq_control_move', Robotiq2FMove)
 
+z_dis_param = 0.1
+x_dis_param = 0.2
 # Custom Benchmark Setting
 custom_benchmark = Benchmark(robot_name="doosan", geom="visual", is_pyplot=True)
 custom_benchmark.robot = SingleArm(f_name=custom_benchmark.urdf_file,
@@ -34,10 +36,13 @@ tray_red_mesh = get_object_mesh('ben_tray_red.stl')
 box_mesh = get_object_mesh('ben_cube.stl', 0.06)
 
 print(box_mesh.bounds)
-
-table_pose = Transform(pos=np.array([1.1, -0.4, 0.23]))
+print(-table_mesh.bounds[0][2])
+table_pose = Transform(pos=np.array([1.1, -0.4, -table_mesh.bounds[0][2]]))
 tray_red_pose = Transform(pos=np.array([0.6, -0.5-0.3, 1.0]))
-A_box_pose = Transform(pos=np.array([0.6, 0, table_mesh.bounds[1][2]+0.2]))
+
+table_heigt = table_mesh.bounds[1][2] - table_mesh.bounds[0][2]
+A_box_pose = Transform(pos=np.array([0.6 + x_dis_param, 0, z_dis_param + table_heigt + abs(box_mesh.bounds[0][2])]))
+
 
 custom_benchmark.scene_mngr.add_object(name="table", gtype="mesh", gparam=table_mesh, h_mat=table_pose.h_mat, color=[0.39, 0.263, 0.129])
 custom_benchmark.scene_mngr.add_object(name="A_box", gtype="mesh", gparam=box_mesh, h_mat=A_box_pose.h_mat, color=[1.0, 1.0, 0.])
@@ -90,29 +95,20 @@ grasp_joint_path = np.array(grasp_joint_path).reshape(-1).tolist()
 post_grasp_joint_path = np.array(post_grasp_joint_path).reshape(-1).tolist()
 default_joint_path = np.array(default_joint_path).reshape(-1).tolist()
 
-
-print(pre_grasp_joint_path)
 print("Let's move pre_grasp")
+operate_robot(pre_grasp_joint_path,3)
 
-operate_robot(pre_grasp_joint_path)
 print("go to grasp")
-
-operate_robot(grasp_joint_path)
-
+operate_robot(grasp_joint_path, 2)
 
 # 0 : close 0.7 : open 
 operate_gripper(0)
-
 print("go to post_grasp")
+operate_robot(post_grasp_joint_path, 3)
 
-operate_robot(post_grasp_joint_path)
-operate_robot(default_joint_path)
-
-
+print("go to default pose")
+operate_robot(default_joint_path, 3)
 #print(result)
-
-
-
 
 # pick.scene_mngr.animation(
 #     ax,
