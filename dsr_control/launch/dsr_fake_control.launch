@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
 <launch>
-	<arg name="ns" default="dsr" />
+     	<arg name="ns" default="dsr" />
         <arg name="gripper" default="none"/>
 		<arg name="mobile"  default="none" />
         <arg name="yaml"    default="dsr_control"/>

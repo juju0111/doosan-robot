@@ -3,7 +3,7 @@
 
   <xacro:arg name="color"   default="white"/>
   <xacro:arg name="gripper" default="none"/>
-  <xacro:arg name="ns" default="dsr"/>
+  <xacro:arg name="ns" default="dsr01"/>
 
   <xacro:property name="cr" value="$(arg color)"/>
   <xacro:property name="gr" value="$(arg gripper)"/>

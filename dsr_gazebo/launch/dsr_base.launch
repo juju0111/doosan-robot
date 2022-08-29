@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="ns" default="dsr"/>
+  <arg name="ns" default="dsr01"/>
   <arg name="host" default="127.0.0.1"/>
 	<arg name="port" default="12345"/>
   <arg name="mode" default="virtual"/>
@@ -101,6 +101,6 @@
   <!-- Spawn the model into gazebo. -->
     <node name="spawn_create_model" pkg="gazebo_ros" type="spawn_model" ns="$(arg ns)"
     args="-x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)
-    -urdf -param /$(arg ns)/robot_description -model $(arg ns)"/>
+    -urdf -param /dsr01/robot_description -model $(arg ns)"/>
 
 </launch>
