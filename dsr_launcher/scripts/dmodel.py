@@ -66,7 +66,10 @@ if __name__=="__main__":
             if type(v) is str and len(v) > 10000:
                 models.append(p)
         r = create_robot_model(get('package://dsr_launcher/rviz/default.rviz'))
+        # r = create_robot_model(get('package://realsense2_description/rviz/urdf.rviz'))
+
         for m in models:
+            print("model name : ", m)
             r.add_model(m, m[0:-18])
         temp = tempfile.NamedTemporaryFile()
         r.write(temp)

@@ -4,6 +4,7 @@
 
   <xacro:include filename="$(find dsr_description)/xacro/a0912.urdf.xacro" />
   <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_2f_140.urdf.xacro" />
+  <xacro:include filename="$(find realsense2_description)/urdf/dsr_d435_camera.urdf.xacro"/>
   
 
   <!--xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f_140_model.xacro" /-->

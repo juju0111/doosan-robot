@@ -75,7 +75,7 @@
   </group>
 
   <!-- Generate the model for gazebo and publish the robots joint states. -->
-  <include file="$(find dsr_description)/launch/dsr_description.launch">
+  <include file="$(find dsr_description)/launch/dsr_cam_description.launch">
     <arg name="ns"      value="$(arg ns)"/>
     <arg name="model"   value="$(arg model)"/>
     <arg name="color"   value="$(arg color)"/>
@@ -87,7 +87,13 @@
   <!-- ARM은 /world에 fixed되어 있으므로 map에 열결
   Usage: static_transform_publisher x y z yaw pitch roll frame_id child_frame_id  period (milliseconds) -->
   <group if="$(eval arg('mobile') == 'none')">
-    <node pkg="tf" type="static_transform_publisher" name="world_tf" ns="$(arg ns)"
+    <!-- <node pkg="tf" type="static_transform_publisher" name="world_tf" ns="$(arg ns)"
+          args="$(arg x) $(arg y) $(arg z) $(arg yaw) 0 0 world base_link 100"/> -->
+
+    <!-- <node pkg="tf" type="static_transform_publisher" name="base_map_tf" ns="$(arg ns)"
+          args="$(arg x) $(arg y) $(arg z) $(arg yaw) 0 0 base_link map 100"/> -->
+
+    <node pkg="tf" type="static_transform_publisher" name="map_tf" ns="$(arg ns)"
           args="$(arg x) $(arg y) $(arg z) $(arg yaw) 0 0 map $(arg ns)/world 100"/>
   </group>
 
