@@ -24,6 +24,8 @@
 	    <!-- cam topic publish -->
 		<node pkg="tf" type="static_transform_publisher" name="pointcloud" args="0 0 0 0 0 0 dsr01/camera_depth_optical_frame camera_depth_optical_frame 100"  />
 		<node pkg="tf" type="static_transform_publisher" name="camera" args="0 0 0 0 0 0 dsr01/camera_color_optical_frame camera_color_optical_frame 100"  />
+		<node pkg="tf" type="static_transform_publisher" name="camera_R" args="0 0 0 0 0 0 dsr01/camera_right_ir_optical_frame camera_right_ir_optical_frame 100"  />
+		<node pkg="tf" type="static_transform_publisher" name="camera_L" args="0 0 0 0 0 0 dsr01/camera_left_ir_optical_frame camera_left_ir_optical_frame 100"  />
 
 	</group>
 
@@ -45,6 +47,11 @@
 
 	
 	</node>
+
+    <!--  -->
+    <node pkg="dsr_example_py" type="world_to_cam.py" name="world_to_cam_py" />
+
+	<node pkg="dsr_example_py" type="dsr_camera.py" name="dsr_camera_py"/>
 
 
 </launch>

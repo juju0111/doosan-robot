@@ -7,7 +7,7 @@ Panels:
         - /MotionPlanning1
         - /MotionPlanning1/Planning Request1
       Splitter Ratio: 0.7425600290298462
-    Tree Height: 524
+    Tree Height: 357
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -168,6 +168,10 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          tcp:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           world:
             Alpha: 1
             Show Axes: false
@@ -312,6 +316,10 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          tcp:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           world:
             Alpha: 1
             Show Axes: false
@@ -373,5 +381,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 475
-  X: 1338
-  Y: 227
+  X: 1241
+  Y: 228

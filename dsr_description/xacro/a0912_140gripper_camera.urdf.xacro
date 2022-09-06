@@ -12,5 +12,31 @@
   <!--xacro:include filename="$(find robot_dcription)/robots/cam_plugin.gazebo" /-->
 
 
+	<link name="marker">
+		<inertial>
+			<mass value="3.635"/>
+			<origin xyz="4e-06   -0.001016     0.08181"/>
+			<inertia ixx="0.02216" ixy="5.8001e-06" ixz="6.1941e-06" iyy="0.024835"
+				iyz="-5.3034e-05"
+				izz="0.021063"/>
+			</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0" />
+			<geometry>
+				<mesh filename="package://aruco_ros/aruco_models/marker1/meshes/Marker1.dae" scale="0.5 0.5 0.5" />
+			</geometry>
+		</visual>
+	</link>
+		
+	<joint name="marker_joint" type="fixed">
+		<parent link="base_0" />
+		<child link="marker" />
+		<origin rpy="0 0.7 0" xyz="0.8 0.2 0.1" />
+		<axis xyz="0 0 1" />
+		<limit effort="411" lower="-6.2832" upper="6.2832" velocity="3.1416"/>
+		<dynamics friction="0" />
+	</joint>
+	
+
 
 </robot>

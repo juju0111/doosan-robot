@@ -262,7 +262,7 @@ class PickNPlaceTutorial():
 
         pick_pose = copy.deepcopy(pre_pose)
         pick_pose.position.z -= 0.15
-        self.jmove_to_pose_goal(pick_pose)
+        self.tmove_to_pose_goal(pick_pose)
         print("wait for move to pick_position")
         raw_input()
 
@@ -287,7 +287,7 @@ class PickNPlaceTutorial():
 
         place_pose = copy.deepcopy(pose)
         place_pose.position.z -= 0.15
-        self.jmove_to_pose_goal(place_pose)
+        self.tmove_to_pose_goal(place_pose)
         print("wait for move to place_position")
         raw_input()
 
