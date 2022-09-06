@@ -17,7 +17,7 @@ from pytamp.search.mcts import MCTS
 
 rospy.init_node('all_joint_path_run_py', anonymous=True)
 
-operate_robot = rospy.ServiceProxy('/operate_robot',OperatePytamp)
+operate_robot = rospy.ServiceProxy('/operate_robot_joint',OperatePytamp)
 # 0 : close , 0.7 : open 
 operate_gripper = rospy.ServiceProxy('/robotiq_control_move', Robotiq2FMove)
 

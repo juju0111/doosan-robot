@@ -149,6 +149,12 @@
             name="robotiq_140_client" output="screen">
             <param name="action_name" value="command_robotiq_action" />
         </node>
+        
+        <!-- robot joint trajectory execution node  -->
+        <node pkg="dsr_example_py" type="operate_robot_joint_trajectory.py" 
+            name="operate_robot_joint_trajectory">
+        </node>
+        
     </group>
 
 

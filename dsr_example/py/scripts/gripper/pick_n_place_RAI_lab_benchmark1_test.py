@@ -162,6 +162,7 @@ class PickNPlaceTutorial():
                                    0.01,        # eef_step
                                    0.0)         # jump_threshold
 
+        print("Cartesian Path",plan)
         msg = MoveGroupActionResult()
         msg.result.planned_trajectory = plan
         self.plan_result_pub.publish(msg)
@@ -341,7 +342,7 @@ class PickNPlaceTutorial():
 
         pick_pose = copy.deepcopy(pre_pose)
         pick_pose.position.z -= 0.1
-        self.jmove_to_pose_goal(pick_pose)
+        self.tmove_to_pose_goal(pick_pose)
         print("wait for move to pick_position")
         raw_input()
 

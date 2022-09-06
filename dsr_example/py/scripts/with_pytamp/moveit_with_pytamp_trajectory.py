@@ -107,14 +107,15 @@ class moveit_pytamp():
         self.object_info = {}
         self.attached_object_name = ""
         self.tray_object_count = 0
-
-        self.srv_get_pick_path = rospy.ServiceProxy('/get_pick_path',PickPytamp)
-        self.srv_get_place_path = rospy.ServiceProxy('/get_place_path',PlacePytamp)
-
-
+        
         self.srv_robotiq_2f_move = rospy.ServiceProxy('/' + ROBOT_ID + ROBOT_MODEL + '/gripper/robotiq_2f_move', Robotiq2FMove)
         self.srv_robotiq_gripper_move = rospy.ServiceProxy('/robotiq_control_move', Robotiq2FMove)
 
+        # declared at pick_srv.py
+        self.srv_get_pick_path = rospy.ServiceProxy('/get_pick_path',PickPytamp)
+        self.srv_get_place_path = rospy.ServiceProxy('/get_place_path',PlacePytamp)
+
+        # delcared at pick_demo_srv.py
         self.srv_get_path_demo = rospy.ServiceProxy('/get_path_demos',PickPytamp_demo)
 
     
