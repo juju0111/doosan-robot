@@ -106,8 +106,12 @@ pnp_all_joint_pathes = test()
 #             operate_gripper(0)
 #         elif task == ""
 
-global_move_time = 3
-local_move_time = 2
+global_move_time = 6
+local_move_time = 3
+
+init_pos = np.array([ 0, 0, np.pi/2, 0, np.pi/2, 0]).reshape(-1).tolist()
+operate_robot(init_pos,global_move_time)
+
 
 for pnp_all_joint_path in pnp_all_joint_pathes:
     for pnp_joint_path in pnp_all_joint_path:
