@@ -1,0 +1,12 @@
+#________________________________
+# place an object
+# It is a service to place an object on pytamp and get planned joint_path.
+#________________________________
+
+float32[6] current_joint
+string place_object_name 
+---
+float32[] pre_release
+float32[] release
+float32[] post_release
+

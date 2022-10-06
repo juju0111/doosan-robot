@@ -1,0 +1,12 @@
+#_______________________________
+# pick an object
+# It is a service to pick an object on pytamp and get planned joint_path.
+#_______________________________
+
+float32[6] current_joint
+string object_name 
+---
+float32[] pre_grasp
+float32[] grasp
+float32[] post_grasp
+

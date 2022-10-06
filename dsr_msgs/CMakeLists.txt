@@ -170,7 +170,11 @@ add_service_files(
     ./realtime/StartRTControl.srv
     ./realtime/StopRTControl.srv
     ./realtime/WriteDataRT.srv
-
+	
+	./pytamp/PickPytamp.srv
+	./pytamp/PickPytamp_demo.srv
+	./pytamp/PlacePytamp.srv
+	./pytamp/OperatePytamp.srv
 )
 
 generate_messages(

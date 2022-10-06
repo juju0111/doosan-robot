@@ -5,12 +5,22 @@
   <arg name="rviz"  default="true"/>
   <arg name="world" default="empty.world"/>
 
+  <!-- ######################################3 -->
   <arg name="host" default="127.0.0.1"/>
-	<arg name="port" default="12345"/>
+  <!-- <arg name="host" default="192.168.127.100"/> -->
+
   <arg name="mode" default="virtual"/>
-  <arg name="model" default="m1013"/>
+  <arg name="sim" default="true"/>
+  <!-- <arg name="mode" default="real"/> -->
+  <!-- <arg name="sim" default="false"/> -->
+  <!-- ########################################## -->
+
+	<arg name="port" default="12345"/>
+
+
+  <arg name="model" default="a0912"/>
   <arg name="color" default="white"/>
-  <arg name="gripper" default="none"/>
+  <arg name="gripper" default="robotiq_2f"/>
   <arg name="mobile" default="none"/>
   <!--use moveit : controller=:trajectory / else: controller:=position-->
   <arg name="controller" default="trajectory"/>
@@ -65,11 +75,42 @@
       </include>
   </group>
 
-  <group if="$(eval arg('model') == 'a0912')">
+  <!-- <group if="$(eval arg('model') == 'a0912')">
       <include file="$(find moveit_config_a0912)/launch/a0912.launch" ns="dsr01$(arg model)">
           <arg name="fake_execution" value="false"/>
           <arg name="color" value="$(arg color)"/>
       </include>
+  </group> -->
+
+  <group if="$(eval arg('model') == 'a0912')">
+
+        <include file="$(find moveit_config_a0912_gripper)/launch/demo.launch" ns="dsr01$(arg model)" >
+            <arg name="fake_execution" value="false"/>
+            <arg name="color" value="$(arg color)"/>
+        </include>
+
+        <!-- gripper Control --> 
+        <include file="$(find robotiq_2f_gripper_control)/launch/robotiq_action_server.launch">
+            <arg name="comport" value="$(arg comport)" unless="$(arg sim)"/>
+            <arg name="baud" value="$(arg baud)" unless="$(arg sim)"/>
+            <arg name="stroke" value="0.140"/>
+            <arg name="joint_name" value="robotiq_85_left_knuckle_joint"/>
+            <arg name="verbose" value="true"/>
+            <arg name="sim" value="$(arg sim)"/>
+        </include>
+        
+        <!-- Launch action client example  -->
+        <node pkg="robotiq_2f_gripper_control" type="robotiq_2f_action_client_example_class.py" 
+            name="robotiq_140_client" output="screen">
+            <param name="action_name" value="command_robotiq_action" />
+        </node>
+
+        <!-- robot joint trajectory execution node  -->
+        <node pkg="dsr_example_py" type="operate_robot_joint_trajectory.py" 
+            name="operate_robot_joint_trajectory">
+        </node>
+
+
   </group>
 
   <group if="$(eval arg('model') == 'h2017')">

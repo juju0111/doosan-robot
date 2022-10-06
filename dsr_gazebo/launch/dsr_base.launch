@@ -9,6 +9,7 @@
   <arg name="color" default="white"/>
   <arg name="gripper" default="none"/>
   <arg name="mobile" default="none"/>
+  
   <arg name="x" default="0"/>
   <arg name="y" default="0"/>
   <arg name="z" default="0"/>

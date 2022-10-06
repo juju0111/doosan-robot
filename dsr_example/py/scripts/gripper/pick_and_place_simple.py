@@ -13,7 +13,7 @@ sys.path.append( os.path.abspath(os.path.join(os.path.dirname(__file__),"../../.
 
 # for single robot 
 ROBOT_ID     = "dsr01"
-ROBOT_MODEL  = "m1013"
+ROBOT_MODEL  = "a0912"
 import DR_init
 DR_init.__dsr__id = ROBOT_ID
 DR_init.__dsr__model = ROBOT_MODEL
@@ -49,6 +49,11 @@ def _ros_listToFloat64MultiArray(list_src):
     #print(_res)
     #print(len(_res))
     return _res
+
+def gripper_control(value):
+    srv_robotiq_2f_move(value)
+    srv_robotiq_gripper_move(0.7-value)
+     
  
 if __name__ == "__main__":
     #----- set target robot --------------- 
@@ -66,6 +71,8 @@ if __name__ == "__main__":
     #rospy.wait_for_service('/'+ROBOT_ID +ROBOT_MODEL+'/drl/drl_start')
 
     srv_robotiq_2f_move = rospy.ServiceProxy('/' + ROBOT_ID + ROBOT_MODEL + '/gripper/robotiq_2f_move', Robotiq2FMove)
+    srv_robotiq_gripper_move = rospy.ServiceProxy('/robotiq_control_move', Robotiq2FMove)
+    
     
     p0 = posj(0, 0, 0, 0, 0, 0)
     p1 = posj(0, 0, 90, 0, 90, 0)
@@ -78,39 +85,24 @@ if __name__ == "__main__":
 
     while not rospy.is_shutdown():
         movej(p0, vel=60, acc=30)
-        print("movej(p0)")
-        wait(1)
 
         movej(p1, vel=60, acc=30)
-        print("movej(p1)")
-        wait(1)
 
         movel(x1, velx, accx, time=2, mod=DR_MV_MOD_REL)
-        print("movel(x1)")
-        wait(1)
-
-        srv_robotiq_2f_move(0.8) #close
+        #srv_robotiq_2f_move(0.7) #close
+        gripper_control(0.7)
         #robotiq_2f_close()
         rospy.sleep(1)
-
         movel(x2, velx, accx, time=2, mod=DR_MV_MOD_REL)
-        print("movel(x2)")
-        wait(1)
 
         movej(p2, vel=60, acc=30)
-        print("movej(p2)")
-        wait(1)
 
         movel(x1, velx, accx, time=2, mod=DR_MV_MOD_REL)
-        print("movel(x1)")
-        wait(1)
-
         #robotiq_2f_open()
-        srv_robotiq_2f_move(0) #open
+        #srv_robotiq_2f_move(0) #open
+        gripper_control(0.0)
         rospy.sleep(1)
         movel(x2, velx, accx, time=2, mod=DR_MV_MOD_REL)
-        print("movel(x2)")
-        wait(1)
 
         
 
